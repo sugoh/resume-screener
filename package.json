@@ -1,7 +1,7 @@
 {
   "name": "resume-screener",
   "version": "0.1.0",
-  "homepage": "https://sugoh.github.io/resume-screner",
+  "homepage": "https://sugoh.github.io/resume-screener",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
