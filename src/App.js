@@ -43,7 +43,7 @@ export default function App() {
       formData.append("file", blob, "resume.pdf");
 
       const res = await fetch(
-        "https://your-backend/api/v1/resume-screener/screen",
+        "https://api.internal.trychad.com/api/v1/resume-screener/screen",
         {
           method: "POST",
           body: formData,
