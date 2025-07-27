@@ -102,12 +102,19 @@ export default function App() {
     try {
       const formData = new FormData();
 
-      fileContents.forEach(({ buffer, name }) => {
+      if (activeTab === "Screen a resume") {
+        // Single file upload: append first file as 'file'
+        const { buffer, name } = fileContents[0];
         const blob = new Blob([buffer], { type: "application/pdf" });
-        formData.append("file", blob, name); // always "file" param for all
-      });
+        formData.append("file", blob, name);
+      } else {
+        // Bulk upload: append all files as 'files'
+        fileContents.forEach(({ buffer, name }) => {
+          const blob = new Blob([buffer], { type: "application/pdf" });
+          formData.append("files", blob, name);
+        });
+      }
 
-      // Choose endpoint based on active tab
       const endpoint =
         activeTab === "Screen a resume"
           ? "https://api.internal.trychad.com/api/v1/resume-screener/screen"
