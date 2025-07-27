@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 function FlagList({ flags, color }) {
   return (
@@ -31,9 +31,7 @@ function FlagList({ flags, color }) {
   );
 }
 
-export default function ResultsDisplay({ response }) {
-  if (!response) return null;
-
+function SingleResult({ response, isExpanded, toggleExpand, canToggle }) {
   const getBadgeColor = () => {
     switch (response.is_worth_interviewing) {
       case 2:
@@ -66,11 +64,21 @@ export default function ResultsDisplay({ response }) {
         boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
         color: "#222",
+        cursor: canToggle ? "pointer" : "default",
+        userSelect: canToggle ? "none" : "auto",
       }}
+      onClick={canToggle ? toggleExpand : undefined}
     >
-      {/* Candidate Info */}
-      {response.candidate && (
-        <div style={{ marginBottom: 24 }}>
+      {/* Header - Candidate Info + Badge */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: isExpanded ? 24 : 0,
+        }}
+      >
+        <div>
           <h3 style={{ margin: 0, fontSize: 20 }}>{response.candidate.name}</h3>
           {response.candidate.email && (
             <p style={{ margin: 0, fontSize: 14, color: "#666" }}>
@@ -78,39 +86,80 @@ export default function ResultsDisplay({ response }) {
             </p>
           )}
         </div>
-      )}
-
-      {/* Interview Decision Badge */}
-      <div
-        style={{
-          display: "inline-block",
-          padding: "6px 12px",
-          borderRadius: 6,
-          backgroundColor: getBadgeColor(),
-          color: "white",
-          fontWeight: "600",
-          fontSize: 14,
-          marginBottom: 24,
-        }}
-      >
-        {getBadgeText()}
+        <div
+          style={{
+            padding: "6px 12px",
+            borderRadius: 6,
+            backgroundColor: getBadgeColor(),
+            color: "white",
+            fontWeight: "600",
+            fontSize: 14,
+            userSelect: "none",
+          }}
+        >
+          {getBadgeText()}
+        </div>
       </div>
 
-      {/* Green Flags */}
-      {response.green_flags && response.green_flags.length > 0 && (
-        <section style={{ marginBottom: 24 }}>
-          <h3 style={{ color: "green", marginBottom: 8 }}>Green Flags</h3>
-          <FlagList flags={response.green_flags} color="green" />
-        </section>
-      )}
+      {/* Accordion Content */}
+      {isExpanded && (
+        <>
+          {/* Green Flags */}
+          {response.green_flags && response.green_flags.length > 0 && (
+            <section style={{ marginBottom: 24 }}>
+              <h3 style={{ color: "green", marginBottom: 8 }}>Green Flags</h3>
+              <FlagList flags={response.green_flags} color="green" />
+            </section>
+          )}
 
-      {/* Red Flags */}
-      {response.red_flags && response.red_flags.length > 0 && (
-        <section>
-          <h3 style={{ color: "#d93025", marginBottom: 8 }}>Red Flags</h3>
-          <FlagList flags={response.red_flags} color="#d93025" />
-        </section>
+          {/* Red Flags */}
+          {response.red_flags && response.red_flags.length > 0 && (
+            <section>
+              <h3 style={{ color: "#d93025", marginBottom: 8 }}>Red Flags</h3>
+              <FlagList flags={response.red_flags} color="#d93025" />
+            </section>
+          )}
+        </>
       )}
+    </div>
+  );
+}
+
+export default function ResultsDisplay({ response }) {
+  // Always call hooks first, no matter what
+  const [expandedIndexes, setExpandedIndexes] = useState(() => []);
+
+  // Early return for null response
+  if (!response) return null;
+
+  // If response is NOT array, just render SingleResult expanded & no toggle
+  if (!Array.isArray(response)) {
+    return <SingleResult response={response} isExpanded={true} canToggle={false} />;
+  }
+
+  // If array with only one item, expanded & no toggle
+  if (response.length === 1) {
+    return <SingleResult response={response[0]} isExpanded={true} canToggle={false} />;
+  }
+
+  // Multiple results: allow toggling multiple expanded items
+  const toggleExpand = (index) => {
+    setExpandedIndexes((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
+  return (
+    <div>
+      {response.map((res, idx) => (
+        <SingleResult
+          key={idx}
+          response={res}
+          isExpanded={expandedIndexes.includes(idx)}
+          toggleExpand={() => toggleExpand(idx)}
+          canToggle={true}
+        />
+      ))}
     </div>
   );
 }

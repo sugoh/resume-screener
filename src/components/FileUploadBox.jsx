@@ -57,7 +57,11 @@ export default function FileUploadBox({
             </small>
         </div>
         ) : (
-        "Drag & Drop PDF here, or click to select"
+        <div style={{ textAlign: "center", fontSize: 14, color: "#666" }}>
+            Drag & drop files or click to select
+            <br />
+            Accepted file types: pdf, doc, docx
+        </div>
         )}
       <input
         id="fileInput"

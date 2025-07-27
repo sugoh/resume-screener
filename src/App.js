@@ -133,6 +133,7 @@ export default function App() {
     }
 
     setLoading(false);
+    setFileContents(null); // Reset the upload box
   };
 
   return (
@@ -148,12 +149,24 @@ export default function App() {
       <h1
         style={{
           textAlign: "center",
-          marginBottom: "1.5rem",
+          marginBottom: "1rem",
           fontWeight: "700",
         }}
       >
-        Resume Screener
+        So you want to work at a startup?
       </h1>
+      <p
+        style={{
+          textAlign: "center",
+          marginBottom: "2rem",
+          color: "#555",
+          fontSize: "16px",
+          lineHeight: 1.5,
+        }}
+      >
+        Our no-BS resume screener tells you if you're early stage engineering
+        material and flags what might raise eyebrows. Brutally honest, trust.
+      </p>
 
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -164,7 +177,7 @@ export default function App() {
         onDragLeave={onDragLeave}
         handleFileInputChange={handleFileInputChange}
         multiple={activeTab === "Bulk upload"}
-        fileContents={fileContents} // ✅ ADD THIS LINE
+        fileContents={fileContents}
       />
       <ErrorMessage error={error} />
 
