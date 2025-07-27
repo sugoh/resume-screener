@@ -186,7 +186,44 @@ export default function App() {
             color: "#222",
           }}
         >
-          <h2
+          {/* Candidate Info */}
+          {response.candidate && (
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ margin: 0, fontSize: 20 }}>
+                {response.candidate.name}
+              </h3>
+              {response.candidate.email && (
+                <p style={{ margin: 0, fontSize: 14, color: "#666" }}>
+                  {response.candidate.email}
+                </p>
+              )}
+            </div>
+          )}
+          {/* Interview Decision Badge */}
+          <div
+            style={{
+              display: "inline-block",
+              padding: "6px 12px",
+              borderRadius: 6,
+              backgroundColor:
+                response.is_worth_interviewing === 2
+                  ? "#27ae60"
+                  : response.is_worth_interviewing === 1
+                  ? "#f39c12"
+                  : "#e74c3c",
+              color: "white",
+              fontWeight: "600",
+              fontSize: 14,
+              marginBottom: 24,
+            }}
+          >
+            {response.is_worth_interviewing === 2
+              ? "✅ Priority candidate"
+              : response.is_worth_interviewing === 1
+              ? "🤔 Borderline (interview if you have time)"
+              : "❌ Not recommended for interview"}
+          </div>
+          {/* <h2
             style={{
               color: response.is_worth_interviewing ? "green" : "red",
               fontWeight: "700",
@@ -196,8 +233,7 @@ export default function App() {
             {response.is_worth_interviewing
               ? "Recommended for Interview"
               : "Not Recommended for Interview"}
-          </h2>
-
+          </h2> */}
           {response.green_flags && response.green_flags.length > 0 && (
             <section style={{ marginBottom: 24 }}>
               <h3 style={{ color: "green", marginBottom: 8 }}>Green Flags</h3>
@@ -229,7 +265,6 @@ export default function App() {
               </ul>
             </section>
           )}
-
           {response.red_flags && response.red_flags.length > 0 && (
             <section>
               <h3 style={{ color: "#d93025", marginBottom: 8 }}>Red Flags</h3>
