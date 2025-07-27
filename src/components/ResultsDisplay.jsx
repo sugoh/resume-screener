@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import WorkExperience from "./WorkExperience";
+import RecommendedLevel from "./RecommendedLevel";
 
 function FlagList({ flags, color }) {
   return (
@@ -100,6 +102,16 @@ function SingleResult({ response, isExpanded, toggleExpand, canToggle }) {
           {getBadgeText()}
         </div>
       </div>
+      {response.recommended_seniority_levels?.length > 0 && (
+            <RecommendedLevel levels={response.recommended_seniority_levels} />
+          )}
+
+      {/* Work Experience */}
+      <div>
+        {response.candidate.work_experience && response.candidate.work_experience.length > 0 && (
+            <WorkExperience experience={response.candidate.work_experience} />
+        )}
+        </div>
 
       {/* Accordion Content */}
       {isExpanded && (
