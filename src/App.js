@@ -147,22 +147,93 @@ export default function App() {
       )}
 
       {response && (
-        <pre
+        <div
           style={{
-            background: "#f7f7f7",
-            borderRadius: 6,
-            padding: 16,
             marginTop: 24,
-            fontSize: 14,
-            color: "#333",
-            overflowX: "auto",
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
+            padding: 16,
+            borderRadius: 6,
+            backgroundColor: "#f9f9f9",
             boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            color: "#222",
           }}
         >
-          {JSON.stringify(response, null, 2)}
-        </pre>
+          <h2
+            style={{
+              color: response.is_worth_interviewing ? "green" : "red",
+              fontWeight: "700",
+              marginBottom: 12,
+            }}
+          >
+            {response.is_worth_interviewing
+              ? "Recommended for Interview"
+              : "Not Recommended for Interview"}
+          </h2>
+
+          {response.green_flags && response.green_flags.length > 0 && (
+            <section style={{ marginBottom: 24 }}>
+              <h3 style={{ color: "green", marginBottom: 8 }}>Green Flags</h3>
+              <ul style={{ paddingLeft: 20 }}>
+                {response.green_flags.map((flag, i) => (
+                  <li key={i} style={{ marginBottom: 12 }}>
+                    <strong>{flag.reason}</strong>
+                    <ul style={{ paddingLeft: 16, marginTop: 6 }}>
+                      {flag.supporting_points.map((point, idx) => (
+                        <li key={idx} style={{ fontSize: 14, lineHeight: 1.4 }}>
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                    {flag.confidence_score !== undefined && (
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: "#666",
+                          marginTop: 4,
+                          fontStyle: "italic",
+                        }}
+                      >
+                        Confidence: {(flag.confidence_score * 100).toFixed(0)}%
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {response.red_flags && response.red_flags.length > 0 && (
+            <section>
+              <h3 style={{ color: "#d93025", marginBottom: 8 }}>Red Flags</h3>
+              <ul style={{ paddingLeft: 20 }}>
+                {response.red_flags.map((flag, i) => (
+                  <li key={i} style={{ marginBottom: 12 }}>
+                    <strong>{flag.reason}</strong>
+                    <ul style={{ paddingLeft: 16, marginTop: 6 }}>
+                      {flag.supporting_points.map((point, idx) => (
+                        <li key={idx} style={{ fontSize: 14, lineHeight: 1.4 }}>
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                    {flag.confidence_score !== undefined && (
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: "#666",
+                          marginTop: 4,
+                          fontStyle: "italic",
+                        }}
+                      >
+                        Confidence: {(flag.confidence_score * 100).toFixed(0)}%
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
       )}
     </div>
   );
