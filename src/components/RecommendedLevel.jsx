@@ -8,9 +8,9 @@ const LEVEL_ORDER = {
 };
 
 const LEVEL_LABELS = {
-  LEAD_ENGINEER: "👑 Lead Engineer",
-  SENIOR_ENGINEER: "🧠 Senior Engineer",
-  JUNIOR_ENGINEER: "👶 Junior Engineer",
+  LEAD_ENGINEER: "Lead Engineer",
+  SENIOR_ENGINEER: "Senior Engineer",
+  JUNIOR_ENGINEER: "Junior Engineer",
 };
 
 const getVerdict = (score) => {

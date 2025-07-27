@@ -119,7 +119,7 @@ function SingleResult({ response, isExpanded, toggleExpand, canToggle }) {
           {/* Green Flags */}
           {response.green_flags && response.green_flags.length > 0 && (
             <section style={{ marginBottom: 24 }}>
-              <h3 style={{ color: "green", marginBottom: 8 }}>Green Flags</h3>
+              <h3 style={{ color: "green", marginBottom: 8 }}>✅ Green Flags</h3>
               <FlagList flags={response.green_flags} color="green" />
             </section>
           )}
@@ -127,7 +127,7 @@ function SingleResult({ response, isExpanded, toggleExpand, canToggle }) {
           {/* Red Flags */}
           {response.red_flags && response.red_flags.length > 0 && (
             <section>
-              <h3 style={{ color: "#d93025", marginBottom: 8 }}>Red Flags</h3>
+              <h3 style={{ color: "#d93025", marginBottom: 8 }}>🚩 Red Flags</h3>
               <FlagList flags={response.red_flags} color="#d93025" />
             </section>
           )}

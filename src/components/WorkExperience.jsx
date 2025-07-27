@@ -2,9 +2,9 @@ export default function WorkExperience({ experience }) {
   const getTierInfo = (tier) => {
     switch (tier) {
       case 1:
-        return { color: "#2ecc71", label: "Top-tier" };
+        return { color: "#27ae60 ", label: "Top-tier" };
       case 2:
-        return { color: "#27ae60", label: "Strong" };
+        return { color: "#2ecc71", label: "Strong" };
       case 3:
       default:
         return { color: "#f1c40f", label: "Decent" };
