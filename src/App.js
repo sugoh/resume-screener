@@ -2,7 +2,7 @@
 import React, { useState, useCallback } from "react";
 
 export default function App() {
-  const [fileContent, setFileContent] = useState(null);
+  const [fileContents, setFileContents] = useState(null);
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isHover, setIsHover] = useState(false);
@@ -11,16 +11,27 @@ export default function App() {
   const onDrop = useCallback((event) => {
     event.preventDefault();
     setIsHover(false);
-    const file = event.dataTransfer.files[0];
-    if (!file) return;
-    if (file.type !== "application/pdf") {
-      setError("Please upload a PDF file");
+    const files = Array.from(event.dataTransfer.files);
+    const validFiles = files.filter((f) => f.type === "application/pdf");
+
+    if (validFiles.length === 0) {
+      setError("Please upload one or more PDF files");
       return;
     }
-    setError(null);
-    const reader = new FileReader();
-    reader.onload = (e) => setFileContent(e.target.result);
-    reader.readAsArrayBuffer(file);
+
+    const readers = validFiles.map((file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) =>
+          resolve({ name: file.name, buffer: e.target.result });
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      });
+    });
+
+    Promise.all(readers)
+      .then((results) => setFileContents(results))
+      .catch(() => setError("Failed to read one or more files"));
   }, []);
 
   const onDragOver = (e) => {
@@ -30,17 +41,21 @@ export default function App() {
   const onDragLeave = () => setIsHover(false);
 
   const handleSubmit = async () => {
-    if (!fileContent) {
+    if (fileContents.length === 0) {
       setError("No file content to submit");
       return;
     }
+
     setLoading(true);
     setError(null);
     setResponse(null);
+
     try {
-      const blob = new Blob([fileContent], { type: "application/pdf" });
       const formData = new FormData();
-      formData.append("file", blob, "resume.pdf");
+      fileContents.forEach(({ buffer, name }) => {
+        const blob = new Blob([buffer], { type: "application/pdf" });
+        formData.append("files", blob, name);
+      });
 
       const res = await fetch(
         "https://api.internal.trychad.com/api/v1/resume-screener/screen",
@@ -51,12 +66,12 @@ export default function App() {
       );
 
       if (!res.ok) throw new Error(`Server error: ${res.statusText}`);
-
       const data = await res.json();
-      setResponse(data);
+      setResponse(data); // Expecting an array of results
     } catch (err) {
       setError(err.message);
     }
+
     setLoading(false);
   };
 
@@ -104,36 +119,49 @@ export default function App() {
           id="fileInput"
           type="file"
           accept="application/pdf"
+          multiple
           style={{ display: "none" }}
           onChange={(e) => {
-            if (e.target.files.length > 0) {
-              const file = e.target.files[0];
-              if (file.type !== "application/pdf") {
-                setError("Please upload a PDF file");
-                return;
-              }
-              setError(null);
-              const reader = new FileReader();
-              reader.onload = (e) => setFileContent(e.target.result);
-              reader.readAsArrayBuffer(file);
+            const files = Array.from(e.target.files);
+            const validFiles = files.filter(
+              (f) => f.type === "application/pdf"
+            );
+
+            if (validFiles.length === 0) {
+              setError("Please upload valid PDF files");
+              return;
             }
+
+            const readers = validFiles.map((file) => {
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) =>
+                  resolve({ name: file.name, buffer: e.target.result });
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+              });
+            });
+
+            Promise.all(readers)
+              .then((results) => setFileContents(results))
+              .catch(() => setError("Failed to read one or more files"));
           }}
         />
       </label>
 
       <button
         onClick={handleSubmit}
-        disabled={loading || !fileContent}
+        disabled={loading || !fileContents}
         style={{
           width: "100%",
           padding: "0.75rem",
           fontSize: 18,
           fontWeight: "600",
-          backgroundColor: loading || !fileContent ? "#ccc" : "#0070f3",
+          backgroundColor: loading || !fileContents ? "#ccc" : "#0070f3",
           border: "none",
           borderRadius: 6,
-          color: loading || !fileContent ? "#666" : "white",
-          cursor: loading || !fileContent ? "not-allowed" : "pointer",
+          color: loading || !fileContents ? "#666" : "white",
+          cursor: loading || !fileContents ? "not-allowed" : "pointer",
           transition: "background-color 0.3s ease",
         }}
       >
