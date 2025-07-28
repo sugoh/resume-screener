@@ -106,16 +106,15 @@ function SingleResult({ response, isExpanded, toggleExpand, canToggle }) {
             <RecommendedLevel levels={response.recommended_seniority_levels} />
           )}
 
-      {/* Work Experience */}
-      <div>
+      {/* Accordion Content */}
+      {isExpanded && (
+        <>
+        {/* Work Experience */}
+        <div>
         {response.candidate.work_experience && response.candidate.work_experience.length > 0 && (
             <WorkExperience experience={response.candidate.work_experience} />
         )}
         </div>
-
-      {/* Accordion Content */}
-      {isExpanded && (
-        <>
           {/* Green Flags */}
           {response.green_flags && response.green_flags.length > 0 && (
             <section style={{ marginBottom: 24 }}>

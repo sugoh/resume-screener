@@ -4,6 +4,7 @@ import FileUploadBox from "./components/FileUploadBox";
 import SubmitButton from "./components/SubmitButton";
 import ErrorMessage from "./components/ErrorMessage";
 import ResultsDisplay from "./components/ResultsDisplay";
+import RollingCounter from "./components/RollingCounter/RollingCounter";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("Screen a resume");
@@ -12,6 +13,31 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [isHover, setIsHover] = useState(false);
   const [error, setError] = useState(null);
+  const [resumeCount, setResumeCount] = useState(11);
+
+  // useEffect(() => {
+  //   let isMounted = true;
+
+  //   async function fetchCount() {
+  //     try {
+  //       const res = await fetch(
+  //         "https://api.internal.trychad.com/api/v1/resume-screener/count"
+  //       );
+  //       if (!res.ok) throw new Error("Failed to fetch count");
+  //       const data = await res.json();
+  //       if (isMounted) setResumeCount(data.count ?? 0);
+  //     } catch (err) {
+  //       console.error("Polling resume count failed:", err);
+  //     }
+  //   }
+
+  //   fetchCount(); // initial fetch immediately
+  //   const intervalId = setInterval(fetchCount, 2000);
+  //   return () => {
+  //     isMounted = false;
+  //     clearInterval(intervalId);
+  //   };
+  // }, []);
 
   useEffect(() => {
     setFileContents(null);
@@ -83,10 +109,12 @@ export default function App() {
     },
     [validateFiles, processFiles, setIsHover, setFileContents, setError]
   );
+
   const onDragOver = (e) => {
     e.preventDefault();
     setIsHover(true);
   };
+
   const onDragLeave = () => setIsHover(false);
 
   const handleSubmit = async () => {
@@ -103,12 +131,10 @@ export default function App() {
       const formData = new FormData();
 
       if (activeTab === "Screen a resume") {
-        // Single file upload: append first file as 'file'
         const { buffer, name } = fileContents[0];
         const blob = new Blob([buffer], { type: "application/pdf" });
         formData.append("file", blob, name);
       } else {
-        // Bulk upload: append all files as 'files'
         fileContents.forEach(({ buffer, name }) => {
           const blob = new Blob([buffer], { type: "application/pdf" });
           formData.append("files", blob, name);
@@ -133,7 +159,7 @@ export default function App() {
     }
 
     setLoading(false);
-    setFileContents(null); // Reset the upload box
+    setFileContents(null);
   };
 
   return (
@@ -167,6 +193,18 @@ export default function App() {
         Our no-BS resume screener tells you if you're early stage engineering
         material and flags what might raise eyebrows. Brutally honest, trust.
       </p>
+
+      {typeof resumeCount === "number" && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <RollingCounter value={resumeCount}>resumes screened</RollingCounter>
+        </div>
+      )}
 
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 

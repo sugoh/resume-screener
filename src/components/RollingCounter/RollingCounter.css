@@ -1,0 +1,25 @@
+.counter {
+  display: flex;
+  font-family: monospace;
+  font-size: 2rem;
+  overflow: hidden;
+}
+
+.digit-container {
+  width: 1ch;
+  height: 1.5em;
+  overflow: hidden;
+  position: relative;
+  margin: 0 0.05em;
+}
+
+.digit-strip {
+  transition: transform 0.4s ease-in-out;
+}
+
+.digit {
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
